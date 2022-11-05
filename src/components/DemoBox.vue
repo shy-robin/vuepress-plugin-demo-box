@@ -48,6 +48,10 @@ export default {
         return {}
       },
     },
+    cpnId: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
@@ -77,20 +81,42 @@ export default {
         source: sourceCode,
       })
 
-      // const el = document.querySelector('#component-refer-map')
-      // console.log(JSON.parse(decodeURI(el.dataset.components)))
-
       // 不能在 `` 中引用凭借的变量，因为会执行脚本
       const htmlTpl =
         '<scr' +
         'ipt src="//unpkg.com/vue@2/dist/vue.js"></scr' +
         'ipt>\n' +
-        `<div id="app">\n${template.content.trim()}\n</div>`
+        `<div id="app">\n${template ? template.content.trim() : ''}\n</div>`
 
-      const jsTpl = `${script.content.replace(
-        /export default/,
-        'var Main ='
-      )}\nvar Ctor = Vue.extend(Main)\nnew Ctor().$mount('#app')`
+      // const jsTpl = `${
+      //   script ? script.content.replace(/export\s+default/, 'var Main =') : ''
+      // }\nReflect.set(Main, 'components', ${cpnReferMap})\nvar Ctor = Vue.extend(Main)\nnew Ctor().$mount('#app')`
+
+      // const format = (referMap) => {
+      //   const keys = Object.keys(referMap)
+      //   const result = {}
+      //   keys.forEach((key) => {
+      //     result[key] =
+      //   })
+      // }
+      const el = document.getElementById(`demo-cpn-${this.$props.cpnId}`)
+      const cpn = JSON.parse(decodeURI(el.dataset.component))
+      const cpnRefer = {}
+      const cpnName = `render-demo-${this.$props.cpnId}`
+      Reflect.set(cpnRefer, cpnName, cpn)
+
+      const jsTpl = `
+      const config = ${
+        script
+          ? JSON.stringify(script.content.replace(/export\s+default/, ''))
+          : JSON.stringify({})
+      }
+      Reflect.set(config, 'components', ${JSON.stringify(cpnRefer)})
+      new Vue({
+        el: '#app',
+        ...config
+      })
+      `
 
       const cssTpl = styles.map((item) => item.content.trim()).join('\n')
 
@@ -161,7 +187,7 @@ export default {
 .demo-box__meta-description {
   padding: 10px 20px;
   color: #fff;
-  background-color: rgba(255, 255, 255, 18%);
+  background-color: rgba(255, 255, 255, 10%);
 }
 
 .icon-code-pen,
@@ -177,9 +203,10 @@ export default {
   font-size: 14px;
   color: #fff;
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 18%);
+  background-color: rgba(255, 255, 255, 10%);
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease-in-out;
 }
 
 .icon-arrow-up {

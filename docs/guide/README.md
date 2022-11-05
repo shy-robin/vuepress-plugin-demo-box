@@ -58,8 +58,44 @@ export default {
 
 :::
 
-## Title1
+:::demo FooBar
 
-_HEllO WORLD_
+```vue
+<template>
+  <demo-component />
+</template>
+```
 
-**END LINE**
+:::
+
+## 自定义组件
+
+:::demo Info
+
+```vue
+<template>
+  <cpn-info />
+</template>
+```
+
+:::
+
+:::demo Info List
+
+```vue
+<template>
+  <cpn-list />
+</template>
+```
+
+:::
+
+### 不使用 vue 组件
+
+:::demo TEST
+
+```html
+<div></div>
+```
+
+:::

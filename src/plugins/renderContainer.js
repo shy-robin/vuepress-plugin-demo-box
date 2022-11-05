@@ -44,9 +44,9 @@ module.exports = (options) => {
           const encodeOptionsStr = encodeURI(JSON.stringify(options))
           // 自定义起始标签
           return `
-              <${componentName} :options="JSON.parse(decodeURI('${encodeOptionsStr}'))">
+              <${componentName} :options="JSON.parse(decodeURI('${encodeOptionsStr}'))" :cpn-id="${idx}">
                 <template slot="demo">
-                  <!--pre-render-demo:${content}:pre-render-demo-->
+                  <!--pre-render-demo:CPN_ID--${idx}--CPN_ID${content}:pre-render-demo-->
                 </template>
                 ${
                   description

@@ -1,4 +1,9 @@
-const { COMMENT_START, COMMENT_END } = require('./constant')
+const {
+  COMMENT_START,
+  COMMENT_END,
+  CPN_ID_START,
+  CPN_ID_END,
+} = require('./constant')
 const sfcCompiler = require('@vue/compiler-sfc')
 const { compileTemplate } = require('@vue/component-compiler-utils')
 const vueTplCompiler = require('vue-template-compiler')
@@ -8,7 +13,7 @@ const genInlineComponentText = (template, script) => {
   const finalOptions = {
     source: `<div>${template}</div>`,
     filename: 'inline-component', // TODO：这里有待调整
-    vueTplCompiler,
+    compiler: vueTplCompiler,
   }
   const compiled = compileTemplate(finalOptions)
 
@@ -74,23 +79,28 @@ const mergeStyle = (styleArr) => {
 const generateScript = (componentRefMap) => {
   // 仅允许在 demo 不存在时，才可以在 Markdown 中写 script 标签
   // TODO: 优化这段逻辑
-  if (componentRefMap.size) {
+  const keys = Object.keys(componentRefMap)
+  if (keys.length) {
     return `
       <script>
         export default {
           name: 'component-doc',
           components: {
-            ${Array.from(componentRefMap.keys())
-              .map((key) => `'${key}': ${componentRefMap.get(key)}`)
-              .join(', ')}
+            ${keys.map((key) => `'${key}': ${componentRefMap[key]}`).join(', ')}
           }
         }
       </script>
     `
   }
+  return ''
 }
 
-const parseContent = (content, id) => {
+const parseContent = (str) => {
+  const pattern = /CPN_ID--(.*)--CPN_ID/
+  const matchRst = pattern.exec(str)
+  const id = matchRst ? matchRst[1] : 'null'
+  const content = str.replace(/CPN_ID--(.*)--CPN_ID/, '')
+
   /**
    * 解析 Vue 文件的 template、script、styles（template 和 script 只能解析一个，若有多个只能解析出最后一个）
    */
@@ -108,6 +118,7 @@ const parseContent = (content, id) => {
     componentName: demoComponentName,
     component: demoComponentContent,
     style: styles.map((item) => item.content).join('\n'),
+    id,
   }
 }
 
@@ -126,7 +137,7 @@ const parseHtmlToVue = (html) => {
 
   const templateArr = [] // 非 demo 内容和 demo 组件的数组
   const styleArr = [] // 所有 demo 的 style 数组
-  let componentReferMap = new Map() // 组件引用代码
+  let componentReferMap = {} // 组件引用代码
   let id = 0 // demo 组件的 id
   let start = 0 // 字符串开始位置
 
@@ -137,10 +148,20 @@ const parseHtmlToVue = (html) => {
       endCommentIdx
     )
 
-    const { componentName, component, style } = parseContent(commentContent, id)
+    const {
+      componentName,
+      component,
+      style,
+      id: cpnId,
+    } = parseContent(commentContent)
     templateArr.push(`<template><${componentName} /></template>`)
+    templateArr.push(
+      `<span id="demo-cpn-${cpnId}" data-component="${encodeURI(
+        JSON.stringify(component)
+      )}"></span>`
+    )
     styleArr.push(style)
-    componentReferMap.set(componentName, component)
+    Reflect.set(componentReferMap, componentName, component)
 
     // 重新计算下一次的位置
     id++
@@ -150,12 +171,6 @@ const parseHtmlToVue = (html) => {
   }
 
   templateArr.push(html.slice(start))
-
-  templateArr.push(
-    `<span id="component-refer-map" data-components="${encodeURI(
-      JSON.stringify(componentReferMap)
-    )}"></span>`
-  )
 
   return {
     template: templateArr.join(''),

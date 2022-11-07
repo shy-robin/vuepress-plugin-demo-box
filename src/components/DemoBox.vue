@@ -4,11 +4,17 @@
       <slot name="demo"></slot>
     </div>
     <div class="demo-box__operation">
+      <span @click="handleEdit">Edit</span>
       <icon-code-pen
         class="icon-code-pen"
         @click.native="handleJumpCodePen"
       ></icon-code-pen>
-      <icon-copy class="icon-copy" @click.native="handleCopy"></icon-copy>
+      <icon-done v-if="isCopied" class="icon-done"></icon-done>
+      <icon-copy
+        v-else
+        class="icon-copy"
+        @click.native="handleCopy"
+      ></icon-copy>
       <icon-code class="icon-code" @click.native="handleExpand"></icon-code>
     </div>
     <div class="demo-box__meta" ref="meta">
@@ -31,6 +37,7 @@ import IconCopy from './icons/IconCopy.vue'
 import IconCode from './icons/IconCode.vue'
 import IconArrowUp from './icons/IconArrowUp.vue'
 import IconCodePen from './icons/IconCodePen.vue'
+import IconDone from './icons/IconDone.vue'
 const compiler = require('@vue/compiler-sfc')
 
 export default {
@@ -40,6 +47,7 @@ export default {
     IconCode,
     IconArrowUp,
     IconCodePen,
+    IconDone,
   },
   props: {
     options: {
@@ -56,6 +64,7 @@ export default {
   data() {
     return {
       isExpanded: false,
+      isCopied: false,
     }
   },
   watch: {
@@ -68,12 +77,31 @@ export default {
       this.isExpanded = !this.isExpanded
     },
     handleCopy() {
-      const pre = this.$el.querySelectorAll('pre')[0]
-      pre.setAttribute('contenteditable', 'true')
-      pre.focus()
-      document.execCommand('selectAll', false, null)
-      document.execCommand('copy')
-      pre.removeAttribute('contenteditable')
+      const text = this.$el.querySelector('code').innerText
+      if (navigator.clipboard) {
+        // clipboard api 复制
+        navigator.clipboard.writeText(text)
+      } else {
+        const textarea = document.createElement('textarea')
+        document.body.appendChild(textarea)
+        // 隐藏此输入框
+        textarea.style.position = 'fixed'
+        textarea.style.clip = 'rect(0 0 0 0)'
+        textarea.style.top = '10px'
+        // 赋值
+        textarea.value = text
+        // 选中
+        textarea.select()
+        // 复制
+        document.execCommand('copy', true)
+        // 移除输入框
+        document.body.removeChild(textarea)
+      }
+      this.isCopied = true
+      const timer = setTimeout(() => {
+        this.isCopied = false
+        clearTimeout(timer)
+      }, 2000)
     },
     handleJumpCodePen() {
       const sourceCode = this.$el.querySelector('code').innerText
@@ -142,6 +170,7 @@ export default {
 
       form.submit()
     },
+    handleEdit() {},
   },
   computed: {
     metaElHeight() {
@@ -192,6 +221,7 @@ export default {
 
 .icon-code-pen,
 .icon-copy,
+.icon-done,
 .icon-code {
   margin-right: 15px;
   cursor: pointer;

@@ -1,9 +1,4 @@
-const {
-  COMMENT_START,
-  COMMENT_END,
-  CPN_ID_START,
-  CPN_ID_END,
-} = require('./constant')
+const { COMMENT_START, COMMENT_END } = require('./constant')
 const sfcCompiler = require('@vue/compiler-sfc')
 const { compileTemplate } = require('@vue/component-compiler-utils')
 const vueTplCompiler = require('vue-template-compiler')

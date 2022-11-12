@@ -1,19 +1,40 @@
 {
   "name": "vuepress-plugin-demo-box",
   "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "description": "Vuepress plugin for demo block.",
+  "main": "src/index.js",
   "authors": {
-    "name": "",
-    "email": ""
+    "name": "ShyRobin",
+    "email": "shy_robin@163.com"
   },
-  "repository": "/vuepress-plugin-demo-box",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shy-robin/vuepress-plugin-demo-box.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shy-robin/vuepress-plugin-demo-box.git/issues"
+  },
+  "homepage": "https://github.com/shy-robin/vuepress-plugin-demo-box.git#readme",
+  "keywords": [
+    "vue",
+    "vuepress",
+    "documentation",
+    "plugin",
+    "demo",
+    "block",
+    "component"
+  ],
   "scripts": {
     "docs:dev": "vuepress dev docs --no-cache --debug",
     "docs:build": "vuepress build docs"
   },
   "license": "MIT",
   "devDependencies": {
-    "vuepress": "^1.5.3"
+    "vuepress": "^1.9.7",
+    "element-ui": "^2.15.10"
+  },
+  "dependencies": {
+    "async-validator": "1.11.5",
+    "vue-codemirror": "4.0.5"
   }
 }

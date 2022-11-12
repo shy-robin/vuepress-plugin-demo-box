@@ -18,6 +18,10 @@
   </svg>
 </template>
 
-<script></script>
+<script>
+export default {
+  name: 'IconDone',
+}
+</script>
 
 <style></style>

@@ -1,14 +1,15 @@
 const { COMMENT_START, COMMENT_END } = require('./constant')
-const sfcCompiler = require('@vue/compiler-sfc')
-const { compileTemplate } = require('@vue/component-compiler-utils')
-const vueTplCompiler = require('vue-template-compiler')
+// const { parseComponent, compileTemplate } = require('@vue/compiler-sfc')
+const { parseComponent, compileTemplate } = require('./compiler-sfc')
+// const { compileTemplate, parse } = require('@vue/component-compiler-utils')
+// const vueTplCompiler = require('vue-template-compiler')
 
 const genInlineComponentText = (template, script) => {
   // https://github.com/vuejs/vue-loader/blob/423b8341ab368c2117931e909e2da9af74503635/lib/loaders/templateLoader.js#L46
   const finalOptions = {
     source: `<div>${template}</div>`,
     filename: 'inline-component', // TODO：这里有待调整
-    compiler: vueTplCompiler,
+    // compiler: vueTplCompiler,
   }
   const compiled = compileTemplate(finalOptions)
 
@@ -90,18 +91,11 @@ const generateScript = (componentRefMap) => {
   return ''
 }
 
-const parseContent = (str) => {
-  const pattern = /CPN_ID--(.*)--CPN_ID/
-  const matchRst = pattern.exec(str)
-  const id = matchRst ? matchRst[1] : 'null'
-  const content = str.replace(/CPN_ID--(.*)--CPN_ID/, '')
-
+const parseContent = (content, id) => {
   /**
    * 解析 Vue 文件的 template、script、styles（template 和 script 只能解析一个，若有多个只能解析出最后一个）
    */
-  const { template, script, styles } = sfcCompiler.parse({
-    source: content,
-  })
+  const { template, script, styles } = parseComponent(content)
 
   const demoComponentContent = genInlineComponentText(
     template ? template.content : '',
@@ -113,7 +107,6 @@ const parseContent = (str) => {
     componentName: demoComponentName,
     component: demoComponentContent,
     style: styles.map((item) => item.content).join('\n'),
-    id,
   }
 }
 
@@ -143,18 +136,8 @@ const parseHtmlToVue = (html) => {
       endCommentIdx
     )
 
-    const {
-      componentName,
-      component,
-      style,
-      id: cpnId,
-    } = parseContent(commentContent)
+    const { componentName, component, style } = parseContent(commentContent, id)
     templateArr.push(`<template><${componentName} /></template>`)
-    templateArr.push(
-      `<span id="demo-cpn-${cpnId}" data-component="${encodeURI(
-        JSON.stringify(component)
-      )}"></span>`
-    )
     styleArr.push(style)
     Reflect.set(componentReferMap, componentName, component)
 

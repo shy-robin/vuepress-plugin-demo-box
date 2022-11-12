@@ -1,27 +1,41 @@
 <template>
-  <div class="demo-box">
-    <div class="demo-box__component">
+  <div class="demo-box" ref="demoBox">
+    <div class="demo-box__component" ref="cpnRef">
       <slot name="demo"></slot>
     </div>
     <div class="demo-box__operation">
-      <span @click="handleEdit">Edit</span>
-      <icon-code-pen
-        class="icon-code-pen"
-        @click.native="handleJumpCodePen"
-      ></icon-code-pen>
-      <icon-done v-if="isCopied" class="icon-done"></icon-done>
-      <icon-copy
-        v-else
-        class="icon-copy"
-        @click.native="handleCopy"
-      ></icon-copy>
-      <icon-code class="icon-code" @click.native="handleExpand"></icon-code>
+      <div class="demo-box__operation-left" ref="operationLeft">
+        <icon-edit
+          :is-active="isReadOnly"
+          class="icon-edit"
+          @click.native="handleEdit"
+        ></icon-edit>
+        <icon-save
+          :is-active="!isReadOnly"
+          class="icon-save"
+          @click.native="handleSave"
+        ></icon-save>
+      </div>
+      <div class="demo-box__operation-right">
+        <icon-code-pen
+          class="icon-code-pen"
+          @click.native="handleJumpCodePen"
+        ></icon-code-pen>
+        <icon-done v-if="isCopied" class="icon-done"></icon-done>
+        <icon-copy
+          v-else
+          class="icon-copy"
+          @click.native="handleCopy"
+        ></icon-copy>
+        <icon-code class="icon-code" @click.native="handleExpand"></icon-code>
+      </div>
     </div>
     <div class="demo-box__meta" ref="meta">
       <div class="demo-box__meta-description">
         <slot name="description"></slot>
       </div>
       <div class="demo-box__meta-source">
+        <source-code :code.sync="code" :read-only="isReadOnly"></source-code>
         <slot name="source"></slot>
       </div>
       <div class="hide-source" @click="handleExpand">
@@ -38,7 +52,10 @@ import IconCode from './icons/IconCode.vue'
 import IconArrowUp from './icons/IconArrowUp.vue'
 import IconCodePen from './icons/IconCodePen.vue'
 import IconDone from './icons/IconDone.vue'
-const compiler = require('@vue/compiler-sfc')
+import IconEdit from './icons/IconEdit.vue'
+import IconSave from './icons/IconSave.vue'
+import SourceCode from './SourceCode.vue'
+const { parseComponent } = require('../utils/compiler-sfc')
 
 export default {
   name: 'DemoBox',
@@ -48,6 +65,9 @@ export default {
     IconArrowUp,
     IconCodePen,
     IconDone,
+    IconEdit,
+    IconSave,
+    SourceCode,
   },
   props: {
     options: {
@@ -56,20 +76,25 @@ export default {
         return {}
       },
     },
-    cpnId: {
-      type: Number,
-      required: true,
-    },
   },
   data() {
     return {
       isExpanded: false,
       isCopied: false,
+      code: '',
+      isReadOnly: true,
+      metaElHeight: 0,
     }
   },
   watch: {
     isExpanded(newVal) {
       this.$refs.meta.style.height = newVal ? `${this.metaElHeight}px` : '0'
+      this.$refs.operationLeft.style.marginLeft = newVal ? '0' : '-72px'
+    },
+    metaElHeight(newVal) {
+      if (this.isExpanded) {
+        this.$refs.meta.style.height = `${newVal}px`
+      }
     },
   },
   methods: {
@@ -77,10 +102,9 @@ export default {
       this.isExpanded = !this.isExpanded
     },
     handleCopy() {
-      const text = this.$el.querySelector('code').innerText
       if (navigator.clipboard) {
         // clipboard api 复制
-        navigator.clipboard.writeText(text)
+        navigator.clipboard.writeText(this.code)
       } else {
         const textarea = document.createElement('textarea')
         document.body.appendChild(textarea)
@@ -89,7 +113,7 @@ export default {
         textarea.style.clip = 'rect(0 0 0 0)'
         textarea.style.top = '10px'
         // 赋值
-        textarea.value = text
+        textarea.value = this.code
         // 选中
         textarea.select()
         // 复制
@@ -104,47 +128,28 @@ export default {
       }, 2000)
     },
     handleJumpCodePen() {
-      const sourceCode = this.$el.querySelector('code').innerText
-      const { template, script, styles } = compiler.parse({
-        source: sourceCode,
-      })
+      const genScript = (url) => {
+        // 不能在 `` 中引用凭借的变量，因为会执行脚本
+        return '<scr' + `ipt src="${url}"></scr` + 'ipt>\n'
+      }
+      const { template, script, styles } = parseComponent(this.code)
 
-      // 不能在 `` 中引用凭借的变量，因为会执行脚本
+      const styleLink = this.options.cpnStyleUrl ? `<link rel="stylesheet" href="${this.options.cpnStyleUrl}">\n` : ''
       const htmlTpl =
-        '<scr' +
-        'ipt src="//unpkg.com/vue@2/dist/vue.js"></scr' +
-        'ipt>\n' +
+        genScript(this.options.vueUrl) +
+        genScript(this.options.cpnLibUrl) +
+        styleLink +
         `<div id="app">\n${template ? template.content.trim() : ''}\n</div>`
 
-      // const jsTpl = `${
-      //   script ? script.content.replace(/export\s+default/, 'var Main =') : ''
-      // }\nReflect.set(Main, 'components', ${cpnReferMap})\nvar Ctor = Vue.extend(Main)\nnew Ctor().$mount('#app')`
-
-      // const format = (referMap) => {
-      //   const keys = Object.keys(referMap)
-      //   const result = {}
-      //   keys.forEach((key) => {
-      //     result[key] =
-      //   })
-      // }
-      const el = document.getElementById(`demo-cpn-${this.$props.cpnId}`)
-      const cpn = JSON.parse(decodeURI(el.dataset.component))
-      const cpnRefer = {}
-      const cpnName = `render-demo-${this.$props.cpnId}`
-      Reflect.set(cpnRefer, cpnName, cpn)
-
-      const jsTpl = `
-      const config = ${
-        script
-          ? JSON.stringify(script.content.replace(/export\s+default/, ''))
-          : JSON.stringify({})
+      let jsTpl = ''
+      if (script && script.content) {
+        jsTpl = `${script.content.replace(
+          /export\s+default/,
+          'const config ='
+        )}\nconst Cpn = Vue.extend(config)\nnew Cpn().$mount('#app')`
+      } else {
+        jsTpl = "new Vue().$mount('#app')"
       }
-      Reflect.set(config, 'components', ${JSON.stringify(cpnRefer)})
-      new Vue({
-        el: '#app',
-        ...config
-      })
-      `
 
       const cssTpl = styles.map((item) => item.content.trim()).join('\n')
 
@@ -170,18 +175,85 @@ export default {
 
       form.submit()
     },
-    handleEdit() {},
-  },
-  computed: {
-    metaElHeight() {
+    handleEdit() {
+      this.isReadOnly = false
+    },
+    handleSave() {
+      const { template, script, styles } = parseComponent(this.code)
+  
+      const scriptExport = script
+        ? eval(`(() => (${script.content.replace(/export\s+default/, '')}))()`)
+        : {}
+
+      const NewDemo = window.Vue.extend({
+        template: template ? template.content : '',
+        ...scriptExport,
+      })
+
+      Array.from(this.$refs.cpnRef.children).forEach((el) => {
+        this.$refs.cpnRef.removeChild(el)
+      })
+      const newDemo = new NewDemo().$mount()
+      this.$refs.cpnRef.appendChild(newDemo.$el)
+
+      if (styles.length) {
+        const styleTag = document.createElement('style')
+        styleTag.type = 'text/css'
+        styleTag.innerHTML = styles.map((item) => item.content).join('\n')
+        this.$refs.cpnRef.appendChild(styleTag)
+      }
+
+      this.isReadOnly = true
+    },
+    computeMetaElHeight() {
       const el = this.$el.querySelector('.demo-box__meta')
       if (el && el.children) {
-        return Array.from(el.children).reduce((p, c) => {
+        this.metaElHeight = Array.from(el.children).reduce((p, c) => {
           return p + c.clientHeight
         }, 0)
+      } else {
+        this.metaElHeight = 0
       }
-      return 0
     },
+  },
+  mounted() {
+    // 获取源码
+    this.code = this.$el.querySelector('code').innerText
+    // 隐藏 vuepress 渲染的代码块
+    this.$el.querySelector('.language-vue').style.display = 'none'
+    // 初始化高度
+    this.computeMetaElHeight()
+    // 监听代码块的高度变化
+    const sourceEl = this.$el.querySelector('.demo-box__meta-source')
+    const MutationObserver =
+      window.MutationObserver ||
+      window.webkitMutationObserver ||
+      window.MozMutationObserver
+    const mutationObserver = new MutationObserver(() => {
+      this.computeMetaElHeight()
+    })
+    mutationObserver.observe(sourceEl, {
+      childList: true, // 监听子元素的变化
+      subtree: true, // 将观察器应用于该节点的所有后代节点
+    })
+    // 引入 Vue
+    const existVue = Array.from(
+      document.querySelectorAll('head > script')
+    ).some((script) => script.src === this.options.vueUrl)
+    if (!existVue) {
+      const vueScript = document.createElement('script')
+      vueScript.src = this.options.vueUrl
+      document.head.appendChild(vueScript)
+    }
+    // 引入 Element
+    const existCpnLib = Array.from(
+      document.querySelectorAll('head > script')
+    ).some((script) => script.src === this.options.cpnLibUrl)
+    if (!existCpnLib) {
+      const cpnLibScript = document.createElement('script')
+      cpnLibScript.src = this.options.cpnLibUrl
+      document.head.appendChild(cpnLibScript)
+    }
   },
 }
 </script>
@@ -200,7 +272,7 @@ export default {
 .demo-box__operation {
   display: flex;
   padding: 10px 0;
-  justify-content: flex-end;
+  justify-content: space-between;
   border-top: 1px solid #ddd;
 }
 
@@ -211,6 +283,7 @@ export default {
   transition: height 0.35s ease-out;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
+  position: relative;
 }
 
 .demo-box__meta-description {
@@ -227,6 +300,19 @@ export default {
   cursor: pointer;
 }
 
+.icon-edit,
+.icon-save {
+  cursor: pointer;
+  margin-left: 15px;
+}
+.demo-box__operation {
+  overflow: hidden;
+}
+.demo-box__operation-left {
+  margin-left: -72px;
+  transition: all 0.3s ease-out;
+}
+
 .hide-source {
   display: flex;
   padding: 10px 0;
@@ -237,6 +323,10 @@ export default {
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease-in-out;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 .icon-arrow-up {
@@ -245,9 +335,5 @@ export default {
 
 .hide-source:hover {
   background-color: rgba(255, 255, 255, 20%);
-}
-
-.demo-box__meta-source pre {
-  margin: 0 !important;
 }
 </style>

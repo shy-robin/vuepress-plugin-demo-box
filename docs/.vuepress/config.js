@@ -68,11 +68,9 @@ module.exports = {
       require('../../src'),
       {
         component: 'DemoBox',
-        params: {
-          name: 'Tom',
-          age: 18,
-          gender: 'male',
-        },
+        cpnLibUrl: 'https://unpkg.com/element-ui/lib/index.js',
+        cpnStyleUrl: 'https://unpkg.com/element-ui/lib/theme-chalk/index.css',
+        vueUrl: 'https://cdn.jsdelivr.net/npm/vue@2.7.13',
       },
     ],
   ],

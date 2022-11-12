@@ -14,6 +14,6 @@ module.exports = (options = {}, ctx) => {
       // 添加插件
       md.use(renderContainer(options)) // 基于 markdown-it-container 识别并替换 :::demo xxx ::: 标签
       md.use(renderMarkdown) // 重写 render 方法，将 demo 转换成组件并引入到页面中
-    }
+    },
   }
 }

@@ -1,4 +1,3 @@
-const { COMMENT_START, COMMENT_END } = require('./constant')
 const { parseComponent, compileTemplate } = require('./compiler-sfc')
 
 const genInlineComponentText = (template, script) => {
@@ -8,7 +7,7 @@ const genInlineComponentText = (template, script) => {
     filename: 'inline-component', // TODO：这里有待调整
   }
   const compiled = compileTemplate(finalOptions)
-  console.log(compiled)
+
   // tips
   if (compiled.tips && compiled.tips.length) {
     compiled.tips.forEach((tip) => {
@@ -109,6 +108,9 @@ const parseHtmlToVue = (html) => {
   if (!html) {
     return html
   }
+
+  const COMMENT_START = '<!--pre-render-demo:'
+  const COMMENT_END = ':pre-render-demo-->'
 
   const startCommentLen = COMMENT_START.length
   const endCommentLen = COMMENT_END.length

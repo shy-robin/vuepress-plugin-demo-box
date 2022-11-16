@@ -2,7 +2,7 @@
  * 扫描 :::demo xxx ::: 包裹的代码块，并将 :::demo 和 ::: 替换成特定起始标签和结束标签
  *
  * OUTPUT
- * <${componentName} :options="JSON.parse(decodeURI('%7B%22component%22:%22DemoTest%22%7D'))">
+ * <DemoBox :options="JSON.parse(decodeURI('%7B%22component%22:%22DemoTest%22%7D'))">
  *  <template slot="demo">
  *    <!--pre-render-demo:<div>TTTTT</div>:pre-render-demo-->
  *  </template>
@@ -12,19 +12,11 @@
  *  <template slot="source">
  *    XXXXX
  *  </template>
- * </${componentName}>
+ * </DemoBox>
  */
 const markdownItContainer = require('markdown-it-container')
 
 module.exports = (options) => {
-  const { component = 'demo-box' } = options
-
-  // AaaBbb => aaa-bbb (对应注册的全局组件 DemoBox)
-  const componentName = component
-    .replace(/^\S/, (s) => s.toLowerCase())
-    .replace(/([A-Z])/g, '-$1')
-    .toLowerCase()
-
   return (md) => {
     // 这里的 md 为 markdown-it 实例
     md.use(markdownItContainer, 'demo', {
@@ -44,7 +36,7 @@ module.exports = (options) => {
           const encodeOptionsStr = encodeURI(JSON.stringify(options))
           // 自定义起始标签
           return `
-              <${componentName} :options="JSON.parse(decodeURI('${encodeOptionsStr}'))">
+              <DemoBox :options="JSON.parse(decodeURI('${encodeOptionsStr}'))">
                 <template slot="demo">
                   <!--pre-render-demo:${content}:pre-render-demo-->
                 </template>
@@ -61,7 +53,7 @@ module.exports = (options) => {
         // 自定义结束标签
         return `
                 </template>
-              </${componentName}>
+              </DemoBox>
           `
       },
     })

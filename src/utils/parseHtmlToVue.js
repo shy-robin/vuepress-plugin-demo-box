@@ -1,18 +1,14 @@
 const { COMMENT_START, COMMENT_END } = require('./constant')
-// const { parseComponent, compileTemplate } = require('@vue/compiler-sfc')
 const { parseComponent, compileTemplate } = require('./compiler-sfc')
-// const { compileTemplate, parse } = require('@vue/component-compiler-utils')
-// const vueTplCompiler = require('vue-template-compiler')
 
 const genInlineComponentText = (template, script) => {
   // https://github.com/vuejs/vue-loader/blob/423b8341ab368c2117931e909e2da9af74503635/lib/loaders/templateLoader.js#L46
   const finalOptions = {
     source: `<div>${template}</div>`,
     filename: 'inline-component', // TODO：这里有待调整
-    // compiler: vueTplCompiler,
   }
   const compiled = compileTemplate(finalOptions)
-
+  console.log(compiled)
   // tips
   if (compiled.tips && compiled.tips.length) {
     compiled.tips.forEach((tip) => {
@@ -74,7 +70,6 @@ const mergeStyle = (styleArr) => {
  */
 const generateScript = (componentRefMap) => {
   // 仅允许在 demo 不存在时，才可以在 Markdown 中写 script 标签
-  // TODO: 优化这段逻辑
   const keys = Object.keys(componentRefMap)
   if (keys.length) {
     return `

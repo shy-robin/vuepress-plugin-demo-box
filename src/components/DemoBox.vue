@@ -5,16 +5,8 @@
     </div>
     <div class="demo-box__operation">
       <div class="demo-box__operation-left" ref="operationLeft">
-        <icon-edit
-          :is-active="isReadOnly"
-          class="icon-edit"
-          @click.native="handleEdit"
-        ></icon-edit>
-        <icon-save
-          :is-active="!isReadOnly"
-          class="icon-save"
-          @click.native="handleSave"
-        ></icon-save>
+        <icon-done v-if="isRun" class="icon-run-done"></icon-done>
+        <icon-run v-else class="icon-run" @click.native="handleRun"></icon-run>
       </div>
       <div class="demo-box__operation-right">
         <icon-code-pen
@@ -35,7 +27,7 @@
         <slot name="description"></slot>
       </div>
       <div class="demo-box__meta-source">
-        <source-code :code.sync="code" :read-only="isReadOnly"></source-code>
+        <source-code :code.sync="code"></source-code>
         <slot name="source"></slot>
       </div>
       <div class="hide-source" @click="handleExpand">
@@ -52,8 +44,7 @@ import IconCode from './icons/IconCode.vue'
 import IconArrowUp from './icons/IconArrowUp.vue'
 import IconCodePen from './icons/IconCodePen.vue'
 import IconDone from './icons/IconDone.vue'
-import IconEdit from './icons/IconEdit.vue'
-import IconSave from './icons/IconSave.vue'
+import IconRun from './icons/IconRun.vue'
 import SourceCode from './SourceCode.vue'
 const { parseComponent } = require('../utils/compiler-sfc')
 
@@ -65,8 +56,7 @@ export default {
     IconArrowUp,
     IconCodePen,
     IconDone,
-    IconEdit,
-    IconSave,
+    IconRun,
     SourceCode,
   },
   props: {
@@ -81,15 +71,18 @@ export default {
     return {
       isExpanded: false,
       isCopied: false,
+      isRun: false,
       code: '',
-      isReadOnly: true,
       metaElHeight: 0,
+      cpnLibUrl: this.options.cpnLibUrl || '',
+      cpnStyleUrl: this.options.cpnStyleUrl || '',
+      vueUrl: this.options.vueUrl || 'https://cdn.jsdelivr.net/npm/vue@2.7.13',
     }
   },
   watch: {
     isExpanded(newVal) {
       this.$refs.meta.style.height = newVal ? `${this.metaElHeight}px` : '0'
-      this.$refs.operationLeft.style.marginLeft = newVal ? '0' : '-72px'
+      this.$refs.operationLeft.style.marginLeft = newVal ? '0' : '-36px'
     },
     metaElHeight(newVal) {
       if (this.isExpanded) {
@@ -134,10 +127,12 @@ export default {
       }
       const { template, script, styles } = parseComponent(this.code)
 
-      const styleLink = this.options.cpnStyleUrl ? `<link rel="stylesheet" href="${this.options.cpnStyleUrl}">\n` : ''
+      const styleLink = this.cpnStyleUrl
+        ? `<link rel="stylesheet" href="${this.cpnStyleUrl}">\n`
+        : ''
       const htmlTpl =
-        genScript(this.options.vueUrl) +
-        genScript(this.options.cpnLibUrl) +
+        genScript(this.vueUrl) +
+        genScript(this.cpnLibUrl) +
         styleLink +
         `<div id="app">\n${template ? template.content.trim() : ''}\n</div>`
 
@@ -175,12 +170,9 @@ export default {
 
       form.submit()
     },
-    handleEdit() {
-      this.isReadOnly = false
-    },
-    handleSave() {
+    handleRun() {
       const { template, script, styles } = parseComponent(this.code)
-  
+
       const scriptExport = script
         ? eval(`(() => (${script.content.replace(/export\s+default/, '')}))()`)
         : {}
@@ -203,7 +195,11 @@ export default {
         this.$refs.cpnRef.appendChild(styleTag)
       }
 
-      this.isReadOnly = true
+      this.isRun = true
+      const timer = setTimeout(() => {
+        this.isRun = false
+        clearTimeout(timer)
+      }, 2000)
     },
     computeMetaElHeight() {
       const el = this.$el.querySelector('.demo-box__meta')
@@ -216,7 +212,7 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     // 获取源码
     this.code = this.$el.querySelector('code').innerText
     // 隐藏 vuepress 渲染的代码块
@@ -236,24 +232,29 @@ export default {
       childList: true, // 监听子元素的变化
       subtree: true, // 将观察器应用于该节点的所有后代节点
     })
+
+    const addScript = (url) => {
+      // 脚本会因资源大小导致加载完成时间存在差异
+      return new Promise((resolve, reject) => {
+        const existScript = Array.from(
+          document.querySelectorAll('head > script')
+        ).some((script) => script.src === url)
+
+        if (!existScript) {
+          const scriptEl = document.createElement('script')
+          scriptEl.src = url
+          scriptEl.onload = () => {
+            resolve(true)
+          }
+          document.head.appendChild(scriptEl)
+        }
+      })
+    }
+
     // 引入 Vue
-    const existVue = Array.from(
-      document.querySelectorAll('head > script')
-    ).some((script) => script.src === this.options.vueUrl)
-    if (!existVue) {
-      const vueScript = document.createElement('script')
-      vueScript.src = this.options.vueUrl
-      document.head.appendChild(vueScript)
-    }
-    // 引入 Element
-    const existCpnLib = Array.from(
-      document.querySelectorAll('head > script')
-    ).some((script) => script.src === this.options.cpnLibUrl)
-    if (!existCpnLib) {
-      const cpnLibScript = document.createElement('script')
-      cpnLibScript.src = this.options.cpnLibUrl
-      document.head.appendChild(cpnLibScript)
-    }
+    await addScript(this.vueUrl)
+    // 引入组件库
+    await addScript(this.cpnLibUrl)
   },
 }
 </script>
@@ -300,8 +301,8 @@ export default {
   cursor: pointer;
 }
 
-.icon-edit,
-.icon-save {
+.icon-run,
+.icon-run-done {
   cursor: pointer;
   margin-left: 15px;
 }
@@ -309,7 +310,7 @@ export default {
   overflow: hidden;
 }
 .demo-box__operation-left {
-  margin-left: -72px;
+  margin-left: -36px;
   transition: all 0.3s ease-out;
 }
 

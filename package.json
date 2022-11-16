@@ -30,11 +30,18 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "vuepress": "^1.9.7",
-    "element-ui": "^2.15.10"
+    "element-ui": "^2.15.10",
+    "shy-robin-demo-ui": "^0.1.5",
+    "vuepress": "^1.9.7"
   },
   "dependencies": {
     "async-validator": "1.11.5",
-    "vue-codemirror": "4.0.5"
-  }
+    "vue-codemirror": "4.0.5",
+    "vue-server-renderer": "2.6.14",
+    "vue-template-compiler": "2.6.14"
+  },
+  "files": [
+    "src",
+    "dist"
+  ]
 }

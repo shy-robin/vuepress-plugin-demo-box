@@ -1,66 +1,18 @@
 module.exports = {
-  /**
-   * Ref：https://v1.vuepress.vuejs.org/config/#title
-   */
-  title: 'Vuepress Docs Boilerplate',
-  /**
-   * Ref：https://v1.vuepress.vuejs.org/config/#description
-   */
-  description: 'description',
-
-  /**
-   * Extra tags to be injected to the page HTML `<head>`
-   *
-   * ref：https://v1.vuepress.vuejs.org/config/#head
-   */
-  head: [
-    ['meta', { name: 'theme-color', content: '#3eaf7c' }],
-    ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
-    [
-      'meta',
-      { name: 'apple-mobile-web-app-status-bar-style', content: 'black' },
-    ],
-  ],
-
-  /**
-   * Theme configuration, here is the default theme configuration for VuePress.
-   *
-   * ref：https://v1.vuepress.vuejs.org/theme/default-theme-config.html
-   */
+  title: 'vuepress-plugin-demo-box',
+  description: 'Vuepress plugin for demo block',
   themeConfig: {
-    repo: '',
-    editLinks: false,
-    docsDir: '',
-    editLinkText: '',
-    lastUpdated: false,
+    repo: 'https://www.github.com/shy-robin/vuepress-plugin-demo-box',
     nav: [
       {
-        text: 'Guide',
+        text: '指南',
         link: '/guide/',
-      },
-      {
-        text: 'Config',
-        link: '/config/',
-      },
-      {
-        text: 'VuePress',
-        link: 'https://v1.vuepress.vuejs.org',
       },
     ],
     sidebar: {
-      '/guide/': [
-        {
-          title: 'Guide',
-          collapsable: false,
-          children: [''],
-        },
-      ],
+      '/guide/': ['usage', 'principle', 'example', 'resource'],
     },
   },
-
-  /**
-   * Apply plugins，ref：https://v1.vuepress.vuejs.org/zh/plugin/
-   */
   plugins: [
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
@@ -68,15 +20,10 @@ module.exports = {
       require('../../src'),
       {
         component: 'DemoBox',
-        cpnLibUrl: 'https://unpkg.com/element-ui/lib/index.js',
-        cpnStyleUrl: 'https://unpkg.com/element-ui/lib/theme-chalk/index.css',
-        vueUrl: 'https://cdn.jsdelivr.net/npm/vue@2.7.13',
+        cpnLibUrl: 'https://cdn.jsdelivr.net/npm/shy-robin-demo-ui',
+        cpnStyleUrl:
+          'https://cdn.jsdelivr.net/npm/shy-robin-demo-ui@0.1.5/lib/demo-ui.css',
       },
     ],
   ],
-  configureWebpack: {
-    node: {
-      global: true,
-    },
-  },
 }

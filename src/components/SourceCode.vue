@@ -56,16 +56,11 @@ export default {
       type: String,
       default: '',
     },
-    readOnly: {
-      type: Boolean,
-      default: true,
-    },
   },
   data() {
     return {
       cmOptions: {
         tabSize: 2,
-        readOnly: this.readOnly,
         theme: 'monokai',
         styleActiveLine: true,
         lineNumbers: true,
@@ -87,9 +82,6 @@ export default {
     }
   },
   watch: {
-    readOnly(newVal) {
-      this.cmOptions.readOnly = newVal
-    },
     sourceCode(newVal) {
       this.$emit('update:code', newVal)
     },

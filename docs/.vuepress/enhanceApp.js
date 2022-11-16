@@ -1,6 +1,5 @@
-import Element from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-
+// import DemoUI from 'shy-robin-demo-ui/lib/demo-ui.umd'
+// import 'shy-robin-demo-ui/lib/demo-ui.css'
 /**
  * Client app enhancement file.
  *
@@ -14,5 +13,5 @@ export default ({
   siteData, // site metadata
 }) => {
   // ...apply enhancements for the site.
-  Vue.use(Element)
+  // Vue.use(DemoUI)
 }

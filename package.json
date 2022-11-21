@@ -1,47 +1,23 @@
 {
-  "name": "vuepress-plugin-demo-box",
-  "version": "0.0.1",
-  "description": "Vuepress plugin for demo block.",
-  "main": "src/index.js",
-  "authors": {
-    "name": "ShyRobin",
-    "email": "shy_robin@163.com"
+  "name": "vuepress-plugin",
+  "private": true,
+  "workspaces": [
+    "docs",
+    "libs/*",
+    "plugin"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shy-robin/vuepress-plugin-demo-box.git"
+    "url": "git+https://github.com/shy-robin/vuepress-plugin-demo-box.git"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/shy-robin/vuepress-plugin-demo-box.git/issues"
+    "url": "https://github.com/shy-robin/vuepress-plugin-demo-box/issues"
   },
-  "homepage": "https://github.com/shy-robin/vuepress-plugin-demo-box.git#readme",
-  "keywords": [
-    "vue",
-    "vuepress",
-    "documentation",
-    "plugin",
-    "demo",
-    "block",
-    "component"
-  ],
-  "scripts": {
-    "docs:dev": "vuepress dev docs --no-cache --debug",
-    "docs:build": "vuepress build docs"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "element-ui": "^2.15.10",
-    "shy-robin-demo-ui": "^0.1.5",
-    "vuepress": "^1.9.7"
-  },
-  "dependencies": {
-    "async-validator": "1.11.5",
-    "vue-codemirror": "4.0.5",
-    "vue-server-renderer": "2.6.14",
-    "vue-template-compiler": "2.6.14"
-  },
-  "files": [
-    "src",
-    "dist"
-  ]
+  "homepage": "https://github.com/shy-robin/vuepress-plugin-demo-box#readme"
 }

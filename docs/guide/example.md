@@ -2,42 +2,32 @@
 
 ## 自定义组件
 
-::demo UserInfo
+:::demo CpnInfo
 
 ```vue
 <template>
-  <user-info name="NAME" :gender="1" />
+  <cpn-info name="NAME111" :gender="1" :age="11" />
 </template>
 ```
 
 :::
 
-:::demo xxx
+:::demo CpnList
 
 ```vue
 <template>
-  <cpn-info class="demo1" />
+  <cpn-list />
 </template>
-<style>
-.demo1 {
-  background-color: red;
-}
-</style>
 ```
 
 :::
 
-:::demo yyy
+:::demo HelloWorld
 
 ```vue
 <template>
-  <cpn-info class="demo1" />
+  <hello-world name="NAME222" :gender="2" :age="22" />
 </template>
-<style>
-.demo1 {
-  background-color: blue;
-}
-</style>
 ```
 
 :::

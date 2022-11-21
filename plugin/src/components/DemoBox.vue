@@ -76,7 +76,7 @@ export default {
       metaElHeight: 0,
       cpnLibUrl: this.options.cpnLibUrl || '',
       cpnStyleUrl: this.options.cpnStyleUrl || '',
-      vueUrl: this.options.vueUrl || 'https://cdn.jsdelivr.net/npm/vue@2.7.13',
+      vueUrl: this.options.vueUrl || 'https://cdn.jsdelivr.net/npm/vue@2.6.14',
     }
   },
   watch: {

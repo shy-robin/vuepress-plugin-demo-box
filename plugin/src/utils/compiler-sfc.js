@@ -2960,7 +2960,7 @@ class WalkerBase {
 // @ts-check
 
 /** @typedef { import('estree').BaseNode} BaseNode */
-/** @typedef { import('./walker.js').WalkerContext} WalkerContext */
+/** @typedef { import('./walker.js.js.js.js').WalkerContext} WalkerContext */
 
 /** @typedef {(
  *    this: WalkerContext,
@@ -3078,8 +3078,8 @@ class SyncWalker extends WalkerBase {
 // @ts-check
 
 /** @typedef { import('estree').BaseNode} BaseNode */
-/** @typedef { import('./sync.js').SyncHandler} SyncHandler */
-/** @typedef { import('./async.js').AsyncHandler} AsyncHandler */
+/** @typedef { import('./sync.js.js.js.js').SyncHandler} SyncHandler */
+/** @typedef { import('./async.js.js.js.js').AsyncHandler} AsyncHandler */
 
 /**
  *

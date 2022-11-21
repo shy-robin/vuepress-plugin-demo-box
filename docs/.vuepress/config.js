@@ -14,15 +14,15 @@ module.exports = {
     },
   },
   plugins: [
+    'vuepress-plugin-typescript',
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
     [
-      require('../../src'),
+      require('vuepress-plugin-demo-box'),
       {
-        component: 'DemoBox',
-        cpnLibUrl: 'https://cdn.jsdelivr.net/npm/shy-robin-demo-ui',
+        cpnLibUrl: 'https://cdn.jsdelivr.net/npm/shy-robin-vue2-composition-ui',
         cpnStyleUrl:
-          'https://cdn.jsdelivr.net/npm/shy-robin-demo-ui@0.1.5/lib/demo-ui.css',
+          'https://cdn.jsdelivr.net/npm/shy-robin-vue2-composition-ui/dist/vue2-composition-ui.css',
       },
     ],
   ],

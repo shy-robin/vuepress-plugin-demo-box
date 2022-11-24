@@ -15,6 +15,7 @@ module.exports = (md) => {
          */
         result.html = template
         /**
+         * dataBlockString 为符合 Vue Template 语法的代码块；
          * script 里包含对页面所有 demo 组件的引用；
          * style 里包含页面所有 demo 组件的样式；
          */

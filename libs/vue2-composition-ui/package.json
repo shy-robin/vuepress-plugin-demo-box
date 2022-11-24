@@ -1,7 +1,7 @@
 {
   "name": "shy-robin-vue2-composition-ui",
   "main": "dist/vue2-composition-ui.umd.js",
-  "version": "0.4.1",
+  "version": "0.11.0",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib --name vue2-composition-ui --dest dist src/components/index.js",

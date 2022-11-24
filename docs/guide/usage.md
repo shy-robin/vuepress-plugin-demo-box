@@ -37,7 +37,7 @@ module.exports = {
         cpnStyleUrl:
           'https://cdn.jsdelivr.net/npm/element-ui/lib/theme-chalk/index.css',
         // Vue cdn 地址【选传，仅支持 Vue2.x 版本】
-        vueUrl: 'https://cdn.jsdelivr.net/npm/vue@2.7.13',
+        vueUrl: 'https://cdn.jsdelivr.net/npm/vue@2.6.14',
       },
     ],
   ],

@@ -83,3 +83,21 @@ export default ({
   Vue.use(Element)
 }
 ```
+
+## 问题
+
+1. 插件只支持 Vue2 版本的组件库；
+2. 插件基于 Vuepress1.x 开发，所以不支持 Vuepress2.x 版本，demo 示例中的源码只能按照 Vue2 格式编写；
+3. 如果组件库是基于 Vue2.x + CompositionAPI 开发，则需要将 Vue 的版本将至 2.7 以下，否则会出现 `[Vue warn]: The setup binding property "xxx" is already declared.` 的报错，因为 vue2.7 版本已支持 CompositionAPI 的写法，无需额外引入 @vue/composition-api 包，否则会产生冲突，具体参考：<https://github.com/vuejs/composition-api/issues/213>；
+
+另外，在安装的 vuepress 包下的 package.json 文件中，可以看到 dependencies 中
+
+```json
+{
+  "vue": "^2.6.10",
+  "vue-server-renderer": "^2.6.10",
+  "vue-template-compiler": "^2.6.10"
+}
+```
+
+因此，在安装 vuepress 时，以上三个包会自动安装最新的 2.7 版本，如果此时组件库基于 Vue2 + compositionAPI 开发的，就会产生上面的报错。解决版本是，手动将版本固定到 2.7 以下。

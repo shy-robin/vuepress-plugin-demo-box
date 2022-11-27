@@ -216,7 +216,7 @@ export default {
     // 获取源码
     this.code = this.$el.querySelector('code').innerText
     // 隐藏 vuepress 渲染的代码块
-    this.$el.querySelector('.language-vue').style.display = 'none'
+    this.$el.querySelector('div[class^="language-"]').style.display = 'none'
     // 初始化高度
     this.computeMetaElHeight()
     // 监听代码块的高度变化

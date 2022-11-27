@@ -20,9 +20,10 @@ module.exports = {
     [
       require('vuepress-plugin-demo-box'),
       {
-        cpnLibUrl: 'https://cdn.jsdelivr.net/npm/shy-robin-vue2-composition-ui',
+        cpnLibUrl:
+          'https://cdn.jsdelivr.net/npm/shy-robin-vue2-composition-ui@0.11.0/dist/vue2-composition-ui.umd.js',
         cpnStyleUrl:
-          'https://cdn.jsdelivr.net/npm/shy-robin-vue2-composition-ui/dist/vue2-composition-ui.css',
+          'https://cdn.jsdelivr.net/npm/shy-robin-vue2-composition-ui@0.11.0/dist/vue2-composition-ui.css',
       },
     ],
   ],

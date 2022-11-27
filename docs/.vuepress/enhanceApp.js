@@ -4,7 +4,6 @@
 // import 'vue2-ui/dist/vue2-ui.css'
 import Vue2CompositionUI from 'shy-robin-vue2-composition-ui'
 import 'shy-robin-vue2-composition-ui/dist/vue2-composition-ui.css'
-import compositionAPI from '@vue/composition-api'
 
 /**
  * Client app enhancement file.
@@ -21,6 +20,5 @@ export default ({
   // ...apply enhancements for the site.
   // Vue.use(DemoUI)
   // Vue.use(Vue2UI)
-  Vue.use(compositionAPI)
   Vue.use(Vue2CompositionUI)
 }

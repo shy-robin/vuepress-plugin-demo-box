@@ -1,6 +1,6 @@
 {
   "name": "vuepress-plugin-demo-box",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Vuepress plugin for demo block.",
   "main": "src/index.js",
   "authors": {
